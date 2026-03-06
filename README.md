@@ -79,7 +79,7 @@ mockups/
     Mockups del sistema principal
 
 docs/
-    Documentación del proyecto (SRS, presupuesto, etc.)
+    Documentación del proyecto
 ```
 
 ---

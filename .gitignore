@@ -1,0 +1,19 @@
+# Entorno virtual
+.venv/
+
+# Archivos temporales de VS Code
+.vscode/
+*.code-workspace
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Archivos de prueba/temporales
+*.tmp
+*.log
+
+# Carpeta de imágenes de datos (no subir al repositorio)
+data/

@@ -94,10 +94,11 @@ Las tareas de desarrollo están organizadas mediante **issues de GitHub**, donde
 
 ## Autores
 
-Daniel Cámara Núñez
-Carla Barbero Martín
+Daniel Cámara Núñez - Carla Barbero Martín
 
 Máster en Inteligencia Artificial
+
 Asignatura: Aplicaciones Industriales de Visión Artificial
+
 Universidad Rey Juan Carlos
 

@@ -61,5 +61,16 @@ class TestRBC_Counter(unittest.TestCase):
         os.remove(xml_path)
         os.rmdir("test_output")
 
+    def test_bboxes_validas(self):
+        """Comprueba que las bboxes generadas tienen coordenadas válidas y dentro de la imagen"""
+        imagen = np.zeros((100,100,3), dtype=np.uint8)
+        bboxes = detectar_globulos(imagen)
+
+        for x1, y1, x2, y2 in bboxes:
+            self.assertLess(x1, x2)
+            self.assertLess(y1, y2)
+            self.assertGreaterEqual(x1, 0)
+            self.assertGreaterEqual(y1, 0)
+
 if __name__ == "__main__":
     unittest.main()

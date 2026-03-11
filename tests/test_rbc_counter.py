@@ -5,6 +5,8 @@ import cv2
 import xml.etree.ElementTree as ET
 from src.main import cargar_imagen
 
+DATASET_FOLDER = "data"
+
 # Funciones simuladas para el test
 def detectar_globulos(imagen):
     """Mock simple de detección: devuelve lista de bboxes simuladas"""
@@ -71,6 +73,30 @@ class TestRBC_Counter(unittest.TestCase):
             self.assertLess(y1, y2)
             self.assertGreaterEqual(x1, 0)
             self.assertGreaterEqual(y1, 0)
+    def test_dataset_no_vacio(self):
+        self.assertTrue(len(os.listdir(DATASET_FOLDER)) > 0,
+                        "El dataset está vacío")
+
+    def test_resolucion_dataset(self):
+        """
+        Comprueba que todas las imágenes del dataset tienen resolución 640x480
+        """
+        for filename in os.listdir(DATASET_FOLDER):
+
+            if filename.lower().endswith((".jpg", ".jpeg", ".png")):
+
+                path = os.path.join(DATASET_FOLDER, filename)
+                imagen = cv2.imread(path)
+
+                self.assertIsNotNone(imagen, f"No se pudo cargar {filename}")
+
+                h, w = imagen.shape[:2]
+
+                self.assertEqual(
+                    (w, h),
+                    (640, 480),
+                    f"La imagen {filename} tiene resolución {w}x{h}, debería ser 640x480"
+                )
 
 if __name__ == "__main__":
     unittest.main()

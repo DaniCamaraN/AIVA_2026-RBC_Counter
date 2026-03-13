@@ -3,7 +3,7 @@ import os
 import numpy as np
 import cv2
 import xml.etree.ElementTree as ET
-from src.main import cargar_imagen
+from mockup.mockup import cargar_imagen
 
 DATASET_FOLDER = "data"
 

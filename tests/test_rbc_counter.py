@@ -5,7 +5,7 @@ import cv2
 import xml.etree.ElementTree as ET
 from mockup.mockup import cargar_imagen
 
-DATASET_FOLDER = "data"
+DATASET_FOLDER = "data/JPEGImages"  # Ruta al dataset de imágenes
 
 # Funciones simuladas para el test
 def detectar_globulos(imagen):
@@ -81,12 +81,14 @@ class TestRBC_Counter(unittest.TestCase):
         """
         Comprueba que todas las imágenes del dataset tienen resolución 640x480
         """
+        contador_imagenes = 0
         for filename in os.listdir(DATASET_FOLDER):
 
             if filename.lower().endswith((".jpg", ".jpeg", ".png")):
 
                 path = os.path.join(DATASET_FOLDER, filename)
-                imagen = cv2.imread(path)
+                imagen = cargar_imagen(path)
+                contador_imagenes += 1
 
                 self.assertIsNotNone(imagen, f"No se pudo cargar {filename}")
 
@@ -97,6 +99,9 @@ class TestRBC_Counter(unittest.TestCase):
                     (640, 480),
                     f"La imagen {filename} tiene resolución {w}x{h}, debería ser 640x480"
                 )
+        self.assertGreater(contador_imagenes, 0, "No se encontraron imágenes en el dataset")
+        self.assertEqual(contador_imagenes, len(os.listdir(DATASET_FOLDER)),
+                         "No todas las entradas del dataset son imágenes válidas")
 
 if __name__ == "__main__":
     unittest.main()

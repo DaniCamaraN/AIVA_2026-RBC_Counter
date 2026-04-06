@@ -17,3 +17,4 @@ __pycache__/
 
 # Carpeta de imágenes de datos (no subir al repositorio)
 data/
+output/

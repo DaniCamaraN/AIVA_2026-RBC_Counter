@@ -14,6 +14,7 @@ __pycache__/
 # Archivos de prueba/temporales
 *.tmp
 *.log
+*.mmd
 
 # Carpeta de imágenes de datos (no subir al repositorio)
 data/

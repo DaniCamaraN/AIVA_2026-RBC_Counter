@@ -165,9 +165,11 @@ python -m pytest tests/
 
 ## Estado del proyecto
 
-Actualmente el proyecto se encuentra en fase de **definición de requisitos y planificación**, siguiendo el estándar **IEEE/ANSI 29148** para la especificación de requisitos del sistema. [Documento de especificación de requisitos software](docs/Especificación%20de%20requisitos%20software.pdf)
+- (13/03/2026) Actualmente el proyecto se encuentra en fase de **definición de requisitos y planificación**, siguiendo el estándar **IEEE/ANSI 29148** para la especificación de requisitos del sistema. [Documento de especificación de requisitos software](docs/Especificación%20de%20requisitos%20software.pdf)
 
 Las tareas de desarrollo están organizadas mediante **issues de GitHub**, donde se definen las funcionalidades a implementar y el tiempo estimado para cada una.
+
+- (12/04/2026) Actualmente el proyecto se encuentra en fase de **documento de diseño y funcionalidades principales**.
 
 ---
 

@@ -8,7 +8,7 @@ from src.visualizer import Visualizer
 from src.storage_manager import StorageManager
 from src.logger import Logger
 from src.annotation_reader import AnnotationReader
-from src.metrics import evaluate_detection
+from src.metrics import Metrics
 from typing import List
 
 class RBCPipeline:
@@ -72,7 +72,7 @@ class RBCPipeline:
             bboxes_gt: List[BoundingBox] = AnnotationReader.from_xml(ruta_xml_gt)
 
             # 4. Evaluar métricas
-            metrics = evaluate_detection(bboxes_detectadas, bboxes_gt)
+            metrics = Metrics.evaluate_detection(bboxes_detectadas, bboxes_gt)
 
             # 5. Crear overlays para visualización
             # Verde = Ground Truth, Rojo = Detectado

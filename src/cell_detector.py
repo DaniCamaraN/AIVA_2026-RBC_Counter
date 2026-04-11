@@ -1,41 +1,75 @@
 import cv2
 import numpy as np
-from typing import List
+from typing import List, Optional
+from ultralytics import YOLO
 from src.bounding_box import BoundingBox
 
 class CellDetector:
 
+    def __init__(
+        self,
+        model_path: str = "runs/detect/models/rbc_train/weights/best.pt",
+        conf_threshold: float = 0.65,
+        class_id: Optional[int] = 0
+    ) -> None:
+        """
+        :param model_path: Ruta al modelo entrenado (best.pt)
+        :param conf_threshold: Umbral de confianza
+        :param class_id: Clase a detectar (0 = RBC)
+        """
+        self.model = YOLO(model_path)
+        self.conf_threshold = conf_threshold
+        self.class_id = class_id
+
     def detect(self, imagen: np.ndarray) -> List[BoundingBox]:
         """
-        Detecta glóbulos rojos (versión simplificada)
+        Detecta glóbulos rojos usando YOLO.
 
-        :param imagen: Imagen preprocesada
+        :param imagen: Imagen original (NO preprocesada)
         :return: Lista de bounding boxes
         """
-        # 1. Suavizado
-        blur = cv2.GaussianBlur(imagen, (7, 7), 0)
 
-        # 2. Detección de bordes
-        edges = cv2.Canny(blur, 50, 150)
+        # Asegurar 3 canales (por si viene en gris)
+        if imagen.ndim == 2:
+            imagen = cv2.cvtColor(imagen, cv2.COLOR_GRAY2BGR)
+        elif imagen.ndim == 3 and imagen.shape[2] == 1:
+            imagen = cv2.cvtColor(imagen, cv2.COLOR_GRAY2BGR)
 
-        # 3. Dilatar para unir bordes
-        kernel = np.ones((3, 3), np.uint8)
-        edges = cv2.dilate(edges, kernel, iterations=1)
-
-        # 4. Contornos
-        contornos, _ = cv2.findContours(
-            edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        results = self.model.predict(
+            source=imagen,
+            conf=self.conf_threshold,
+            verbose=False
         )
 
         bboxes: List[BoundingBox] = []
 
-        for cnt in contornos:
-            x, y, w, h = cv2.boundingRect(cnt)
+        if not results:
+            return bboxes
 
-            area = w * h
+        result = results[0]
 
-            #FILTRO CLAVE (ajústar)
-            if 50 < area < 5000:
+        if result.boxes is None:
+            return bboxes
+
+        for box in result.boxes:
+            cls = int(box.cls.item())
+            conf = float(box.conf.item())
+
+            # Filtrar clase (RBC = 0)
+            if self.class_id is not None and cls != self.class_id:
+                continue
+
+            if conf < self.conf_threshold:
+                continue
+
+            x1, y1, x2, y2 = box.xyxy[0].tolist()
+
+            x = int(round(x1))
+            y = int(round(y1))
+            w = int(round(x2 - x1))
+            h = int(round(y2 - y1))
+
+            if w > 0 and h > 0:
                 bboxes.append(BoundingBox(x, y, w, h))
 
         return bboxes

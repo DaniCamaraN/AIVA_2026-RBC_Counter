@@ -80,6 +80,12 @@ mockups/
 
 docs/
     Documentación del proyecto
+
+diagrams/
+    Diagramas de clases, secuencia y actividad del proyecto
+
+runs/detect/models/
+    Modelo entrenado
 ```
 
 ---

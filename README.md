@@ -175,8 +175,9 @@ python -m pytest tests/
 
 Las tareas de desarrollo están organizadas mediante **issues de GitHub**, donde se definen las funcionalidades a implementar y el tiempo estimado para cada una.
 
-- (12/04/2026) Actualmente el proyecto se encuentra en fase de **documento de diseño y funcionalidades principales**.
+- (12/04/2026) Actualmente el proyecto se encuentra en fase de **documento de diseño y funcionalidades principales**. [Documento de diseño y funcionalidades principales](docs/Diseño%20y%20funcionalidades%20principales.pdf)
 
+ 
 ---
 
 ## Autores

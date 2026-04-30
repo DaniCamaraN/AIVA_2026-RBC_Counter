@@ -19,4 +19,6 @@ __pycache__/
 # Carpeta de imágenes de datos (no subir al repositorio)
 data/JPEGImages/*
 data/Annotations/*
+!data/JPEGImages/.gitkeep
+!data/Annotations/.gitkeep
 output/

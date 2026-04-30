@@ -17,5 +17,6 @@ __pycache__/
 *.mmd
 
 # Carpeta de imágenes de datos (no subir al repositorio)
-data/
+data/JPEGImages/*
+data/Annotations/*
 output/

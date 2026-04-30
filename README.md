@@ -102,11 +102,9 @@ runs/detect/models/
 1. **Clona el repositorio:**
 
    ```bash
-   git clone <URL-del-repositorio>
+   git clone https://github.com/DaniCamaraN/AIVA_2026-RBC_Counter.git
    cd AIVA_2026-RBC_Counter
    ```
-
-   Reemplaza `<URL-del-repositorio>` con la URL del repositorio GitHub correspondiente.
 
 2. **Crea un entorno virtual:**
 
@@ -137,6 +135,11 @@ runs/detect/models/
    - Matplotlib (matplotlib==3.10.8) para visualización
    - Y otras dependencias listadas en `requirements.txt`
 
+5. **Datos**
+
+En la carpeta data/JPEGImages se añadirán las imágenes que sequieren procesar.
+En la carpeta data/Annotations se añadirán las anotaciones en .xml de las imágenes de las que se disponga su anotación humana.
+
 ### Uso
 
 El proyecto incluye varios scripts para diferentes funcionalidades:
@@ -145,7 +148,9 @@ El proyecto incluye varios scripts para diferentes funcionalidades:
 
 - **Entrenamiento del modelo:** Ejecuta `python run_train.py` para entrenar el modelo de detección de glóbulos rojos.
 
-- **Generación de ground truth:** Ejecuta `python run_gt.py` para procesar las anotaciones y generar datos de ground truth.
+- **Generación de ground truth para una imagen:** Ejecuta `python run_gt.py` para procesar una imagen con su anotación y obtener métricas de comparación contra el ground truth.
+
+- **Generación de ground truth para todo el dataset:** Ejecuta `python run_gt_all.py` para procesar todas las imágenes de `data/JPEGImages` junto con sus XML de `data/Annotations`. Este script calcula métricas por imagen y muestra el tiempo de procesamiento de cada imagen, además del tiempo total de ejecución.
 
 #### Ejemplo de uso
 
@@ -158,6 +163,12 @@ python run.py
 Este comando procesará la imagen `data/JPEGImages/BloodImage_00000.jpg`, detectará los glóbulos rojos, generará bounding boxes y guardará los resultados en la carpeta `output/`, incluyendo:
 - Un archivo XML con las detecciones
 - Una imagen con las bounding boxes superpuestas
+
+Para procesar todo el dataset con métricas de GT y tiempos:
+
+```bash
+python run_gt_all.py
+```
 
 Asegúrate de que el dataset de imágenes esté disponible en la carpeta `data/JPEGImages/` y las anotaciones en `data/Annotations/`.
 

@@ -58,9 +58,18 @@ if __name__ == "__main__":
             # Calcular tiempo de procesamiento
             elapsed_time = time.time() - start_time_image
             
-            # Acumular métricas
-            all_metrics['all_y_true'].extend(metrics['y_true'])
-            all_metrics['all_y_scores'].extend(metrics['y_scores'])
+            # Acumular valores para curvas ROC, PR y matriz de confusión
+            y_true_img = list(metrics['y_true'])
+            y_scores_img = list(metrics['y_scores'])
+
+            # Añadir falsos negativos:
+            # objetos que existen en el ground truth pero no han sido detectados
+            for _ in range(metrics['FN']):
+                y_true_img.append(1)      # RBC real
+                y_scores_img.append(0.0)  # no detectado por el modelo
+
+            all_metrics['all_y_true'].extend(y_true_img)
+            all_metrics['all_y_scores'].extend(y_scores_img)
 
             all_metrics['precision'].append(metrics['precision'])
             all_metrics['recall'].append(metrics['recall'])
@@ -163,13 +172,14 @@ if __name__ == "__main__":
     # =========================
     y_pred = [1 if s >= 0.5 else 0 for s in y_scores]
 
-    cm = confusion_matrix(y_true, y_pred)
+    cm = confusion_matrix(y_true, y_pred, labels=[0, 1])
 
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-    disp.plot()
+    disp = ConfusionMatrixDisplay(
+        confusion_matrix=cm,
+        display_labels=["No RBC", "RBC"]
+    )
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    disp.plot(ax=ax, values_format="d")
     plt.title("Confusion Matrix")
     plt.savefig("confusion_matrix.png")
-
-    
-
-

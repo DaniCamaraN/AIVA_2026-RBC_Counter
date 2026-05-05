@@ -6,6 +6,7 @@ class BoundingBox:
     y: int
     width: int
     height: int
+    score: float = 1.0
 
     # Alias para width
     @property

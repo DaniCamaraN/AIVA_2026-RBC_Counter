@@ -1,5 +1,7 @@
 import os
 import time
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, precision_recall_curve, confusion_matrix, ConfusionMatrixDisplay, auc
 from pathlib import Path
 from src.pipeline import RBCPipeline
 
@@ -24,7 +26,9 @@ if __name__ == "__main__":
         'images_processed': 0,
         'images_failed': 0,
         'failed_images': [],
-        'processing_times': []
+        'processing_times': [],
+        'all_y_true': [],
+        'all_y_scores': []
     }
     
     start_time_total = time.time()
@@ -55,6 +59,9 @@ if __name__ == "__main__":
             elapsed_time = time.time() - start_time_image
             
             # Acumular métricas
+            all_metrics['all_y_true'].extend(metrics['y_true'])
+            all_metrics['all_y_scores'].extend(metrics['y_scores'])
+
             all_metrics['precision'].append(metrics['precision'])
             all_metrics['recall'].append(metrics['recall'])
             all_metrics['TP'].append(metrics['TP'])
@@ -117,3 +124,52 @@ if __name__ == "__main__":
         print(f"\nImágenes con errores ({len(all_metrics['failed_images'])}):")
         for img_name, error in all_metrics['failed_images']:
             print(f"  - {img_name}: {error}")
+
+    
+    # Gráficos adicionales
+    
+    y_true = all_metrics['all_y_true']
+    y_scores = all_metrics['all_y_scores']
+
+    # =========================
+    # ROC CURVE
+    # =========================
+    fpr, tpr, _ = roc_curve(y_true, y_scores)
+    roc_auc = auc(fpr, tpr)
+
+    plt.figure()
+    plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.3f}")
+    plt.plot([0, 1], [0, 1], linestyle="--")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("ROC Curve")
+    plt.legend()
+    plt.savefig("roc_curve.png")
+
+    # =========================
+    # PRECISION-RECALL
+    # =========================
+    precision, recall, _ = precision_recall_curve(y_true, y_scores)
+
+    plt.figure()
+    plt.plot(recall, precision)
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.title("Precision-Recall Curve")
+    plt.savefig("pr_curve.png")
+
+    # =========================
+    # CONFUSION MATRIX
+    # =========================
+    y_pred = [1 if s >= 0.5 else 0 for s in y_scores]
+
+    cm = confusion_matrix(y_true, y_pred)
+
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+    disp.plot()
+    plt.title("Confusion Matrix")
+    plt.savefig("confusion_matrix.png")
+
+    
+
+

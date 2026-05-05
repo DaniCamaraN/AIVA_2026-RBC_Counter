@@ -70,6 +70,6 @@ class CellDetector:
             h = int(round(y2 - y1))
 
             if w > 0 and h > 0:
-                bboxes.append(BoundingBox(x, y, w, h))
+                bboxes.append(BoundingBox(x, y, w, h, score=conf))
 
         return bboxes

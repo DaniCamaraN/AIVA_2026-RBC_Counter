@@ -22,20 +22,46 @@ class Metrics:
         FP = 0
         matched_gt = set()
 
+        y_true = []
+        y_scores = []
+
         for det in detected:
-            match_found = False
+            best_iou = 0
+            best_gt_idx = -1
+
             for i, gt_box in enumerate(gt):
                 if i in matched_gt:
                     continue
-                if Metrics.iou(det, gt_box) > iou_threshold:
-                    TP += 1
-                    matched_gt.add(i)
-                    match_found = True
-                    break
-            if not match_found:
+
+                iou = Metrics.iou(det, gt_box)
+                if iou > best_iou:
+                    best_iou = iou
+                    best_gt_idx = i
+
+            # Score SIEMPRE se guarda
+            score = getattr(det, "score", 1.0)
+
+            if best_iou > iou_threshold:
+                TP += 1
+                matched_gt.add(best_gt_idx)
+                y_true.append(1)
+            else:
                 FP += 1
+                y_true.append(0)
+
+            y_scores.append(score)
 
         FN = len(gt) - len(matched_gt)
+
         precision = TP / (TP + FP) if (TP + FP) > 0 else 0
         recall = TP / (TP + FN) if (TP + FN) > 0 else 0
-        return {'TP': TP, 'FP': FP, 'FN': FN, 'precision': precision, 'recall': recall}
+
+        return {
+            'TP': TP,
+            'FP': FP,
+            'FN': FN,
+            'precision': precision,
+            'recall': recall,
+            'y_true': y_true,
+            'y_scores': y_scores
+        }

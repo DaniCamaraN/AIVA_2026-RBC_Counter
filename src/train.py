@@ -13,8 +13,10 @@ class TrainingPipeline:
         self.splitter = DatasetSplitter(
             images_dir="data/JPEGImages",
             labels_dir="data/labels",
-            output_base="dataset_rbc",
-            train_ratio=0.9
+            annotations_dir="data/Annotations",
+            train_ratio=0.7,
+            val_ratio=0.15,
+            test_ratio=0.15
         )
 
         self.trainer = YOLOTrainer(

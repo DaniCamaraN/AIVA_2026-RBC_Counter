@@ -5,8 +5,8 @@ from sklearn.metrics import roc_curve, precision_recall_curve, confusion_matrix,
 from pathlib import Path
 from src.pipeline import RBCPipeline
 
-DATASET_FOLDER = "data/JPEGImages"  # Carpeta con las imágenes
-ANNOTATIONS_FOLDER = "data/Annotations"  # Carpeta con los XML ground truth
+DATASET_FOLDER = "dataset_rbc/images/test"  # Carpeta con las imágenes
+ANNOTATIONS_FOLDER = "dataset_rbc/labels/test"  # Carpeta con los ground truth
 OUTPUT_FOLDER = "output"  # Carpeta donde se guardarán los resultados
 
 if __name__ == "__main__":

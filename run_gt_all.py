@@ -6,7 +6,7 @@ from pathlib import Path
 from src.pipeline import RBCPipeline
 
 DATASET_FOLDER = "dataset_rbc/images/test"  # Carpeta con las imágenes
-ANNOTATIONS_FOLDER = "dataset_rbc/labels/test"  # Carpeta con los ground truth
+ANNOTATIONS_FOLDER = "dataset_rbc/annotations/test"  # Carpeta con los ground truth
 OUTPUT_FOLDER = "output"  # Carpeta donde se guardarán los resultados
 
 if __name__ == "__main__":

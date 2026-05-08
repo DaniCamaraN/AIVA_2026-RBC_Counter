@@ -180,6 +180,6 @@ if __name__ == "__main__":
     )
 
     fig, ax = plt.subplots(figsize=(8, 8))
-    disp.plot(ax=ax, values_format="d")
+    disp.plot(ax=ax, values_format="d", colorbar=False)
     plt.title("Confusion Matrix")
     plt.savefig("confusion_matrix.png")

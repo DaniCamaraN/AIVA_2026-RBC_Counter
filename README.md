@@ -69,23 +69,32 @@ El repositorio está organizado de la siguiente forma:
 ```
 AIVA_2026:RBC_Counter
 
+data/
+    Datos proporcionados para el desarrollo
+
+diagrams/
+    Diagramas de clases, secuencia y actividad del proyecto
+
+docs/
+    Documentación del proyecto
+
+grafics/
+    Gráficas para explicar modelo
+
+mockups/
+    Mockups del sistema principal
+
+output/
+    Salida de las inferencias del modelo
+
+runs/detect/models/
+    Modelo entrenado
+
 src/
     Implementación del sistema de detección y conteo
 
 tests/
     Tests unitarios del sistema
-
-mockups/
-    Mockups del sistema principal
-
-docs/
-    Documentación del proyecto
-
-diagrams/
-    Diagramas de clases, secuencia y actividad del proyecto
-
-runs/detect/models/
-    Modelo entrenado
 ```
 
 ---
@@ -188,6 +197,7 @@ Las tareas de desarrollo están organizadas mediante **issues de GitHub**, donde
 
 - (12/04/2026) Actualmente el proyecto se encuentra en fase de **documento de diseño y funcionalidades principales**. [Documento de diseño y funcionalidades principales](docs/Diseño%20y%20funcionalidades%20principales.pdf)
 
+- (11/05/2026) Actualmente el proyecto se encuentra en la fase final de **sistema funcional** y desarrollo del **manual de usuario**. [Manual de usuario](docs/Manual%20de%20usuario.pdf)
  
 ---
 

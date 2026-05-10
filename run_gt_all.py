@@ -8,6 +8,8 @@ from src.pipeline import RBCPipeline
 DATASET_FOLDER = "dataset_rbc/images/test"  # Carpeta con las imágenes
 ANNOTATIONS_FOLDER = "dataset_rbc/annotations/test"  # Carpeta con los ground truth
 OUTPUT_FOLDER = "output"  # Carpeta donde se guardarán los resultados
+GRAPHICS_FOLDER = "graphics"
+os.makedirs(GRAPHICS_FOLDER, exist_ok=True)
 
 if __name__ == "__main__":
     pipeline = RBCPipeline()
@@ -27,8 +29,14 @@ if __name__ == "__main__":
         'images_failed': 0,
         'failed_images': [],
         'processing_times': [],
-        'all_y_true': [],
-        'all_y_scores': []
+
+        # Solo detecciones reales del modelo
+        'y_true_no_fn': [],
+        'y_scores_no_fn': [],
+
+        # Detecciones + FN añadidos
+        'y_true_with_fn': [],
+        'y_scores_with_fn': []
     }
     
     start_time_total = time.time()
@@ -59,17 +67,23 @@ if __name__ == "__main__":
             elapsed_time = time.time() - start_time_image
             
             # Acumular valores para curvas ROC, PR y matriz de confusión
-            y_true_img = list(metrics['y_true'])
-            y_scores_img = list(metrics['y_scores'])
+            # Caso 1: sin añadir FN artificiales
+            y_true_no_fn = list(metrics['y_true'])
+            y_scores_no_fn = list(metrics['y_scores'])
 
-            # Añadir falsos negativos:
-            # objetos que existen en el ground truth pero no han sido detectados
+            all_metrics['y_true_no_fn'].extend(y_true_no_fn)
+            all_metrics['y_scores_no_fn'].extend(y_scores_no_fn)
+
+            # Caso 2: añadiendo FN
+            y_true_with_fn = list(metrics['y_true'])
+            y_scores_with_fn = list(metrics['y_scores'])
+
             for _ in range(metrics['FN']):
-                y_true_img.append(1)      # RBC real
-                y_scores_img.append(0.0)  # no detectado por el modelo
+                y_true_with_fn.append(1)      # RBC real
+                y_scores_with_fn.append(0.0)  # no detectado
 
-            all_metrics['all_y_true'].extend(y_true_img)
-            all_metrics['all_y_scores'].extend(y_scores_img)
+            all_metrics['y_true_with_fn'].extend(y_true_with_fn)
+            all_metrics['y_scores_with_fn'].extend(y_scores_with_fn)
 
             all_metrics['precision'].append(metrics['precision'])
             all_metrics['recall'].append(metrics['recall'])
@@ -135,51 +149,64 @@ if __name__ == "__main__":
             print(f"  - {img_name}: {error}")
 
     
-    # Gráficos adicionales
-    
-    y_true = all_metrics['all_y_true']
-    y_scores = all_metrics['all_y_scores']
+    def save_plots(y_true, y_scores, suffix):
+        if len(y_true) == 0 or len(y_scores) == 0:
+            print(f"No hay datos para generar gráficas: {suffix}")
+            return
 
-    # =========================
-    # ROC CURVE
-    # =========================
-    fpr, tpr, _ = roc_curve(y_true, y_scores)
-    roc_auc = auc(fpr, tpr)
+        if len(set(y_true)) < 2:
+            print(f"No se puede calcular ROC/PR para {suffix}: solo hay una clase.")
+            return
 
-    plt.figure()
-    plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.3f}")
-    plt.plot([0, 1], [0, 1], linestyle="--")
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.title("ROC Curve")
-    plt.legend()
-    plt.savefig("roc_curve.png")
+        # ROC
+        fpr, tpr, _ = roc_curve(y_true, y_scores)
+        roc_auc = auc(fpr, tpr)
 
-    # =========================
-    # PRECISION-RECALL
-    # =========================
-    precision, recall, _ = precision_recall_curve(y_true, y_scores)
+        plt.figure()
+        plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.3f}")
+        plt.plot([0, 1], [0, 1], linestyle="--")
+        plt.xlabel("False Positive Rate")
+        plt.ylabel("True Positive Rate")
+        plt.title(f"ROC Curve ({suffix})")
+        plt.legend()
+        plt.savefig(os.path.join(GRAPHICS_FOLDER, f"roc_curve_{suffix}.png"))
+        plt.close()
 
-    plt.figure()
-    plt.plot(recall, precision)
-    plt.xlabel("Recall")
-    plt.ylabel("Precision")
-    plt.title("Precision-Recall Curve")
-    plt.savefig("pr_curve.png")
+        # Precision-Recall
+        precision, recall, _ = precision_recall_curve(y_true, y_scores)
 
-    # =========================
-    # CONFUSION MATRIX
-    # =========================
-    y_pred = [1 if s >= 0.5 else 0 for s in y_scores]
+        plt.figure()
+        plt.plot(recall, precision)
+        plt.xlabel("Recall")
+        plt.ylabel("Precision")
+        plt.title(f"Precision-Recall Curve ({suffix})")
+        plt.savefig(os.path.join(GRAPHICS_FOLDER, f"pr_curve_{suffix}.png"))
+        plt.close()
 
-    cm = confusion_matrix(y_true, y_pred, labels=[0, 1])
+        # Confusion Matrix
+        y_pred = [1 if s >= 0.5 else 0 for s in y_scores]
 
-    disp = ConfusionMatrixDisplay(
-        confusion_matrix=cm,
-        display_labels=["No RBC", "RBC"]
-    )
+        cm = confusion_matrix(y_true, y_pred, labels=[0, 1])
 
-    fig, ax = plt.subplots(figsize=(8, 8))
-    disp.plot(ax=ax, values_format="d", colorbar=False)
-    plt.title("Confusion Matrix")
-    plt.savefig("confusion_matrix.png")
+        disp = ConfusionMatrixDisplay(
+            confusion_matrix=cm,
+            display_labels=["No RBC", "RBC"]
+        )
+
+        fig, ax = plt.subplots(figsize=(8, 8))
+        disp.plot(ax=ax, values_format="d", colorbar=False)
+        plt.title(f"Confusion Matrix ({suffix})")
+        plt.savefig(os.path.join(GRAPHICS_FOLDER, f"confusion_matrix_{suffix}.png"))
+        plt.close()
+
+save_plots(
+    all_metrics['y_true_no_fn'],
+    all_metrics['y_scores_no_fn'],
+    "sin_fn"
+)
+
+save_plots(
+    all_metrics['y_true_with_fn'],
+    all_metrics['y_scores_with_fn'],
+    "con_fn"
+)

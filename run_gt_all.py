@@ -141,7 +141,13 @@ if __name__ == "__main__":
         print(f"  TP (verdaderos positivos): {total_TP}")
         print(f"  FP (falsos positivos): {total_FP}")
         print(f"  FN (falsos negativos): {total_FN}")
-    
+        
+        tpr = total_TP / (total_TP + total_FN + 1e-10)
+        fnr = total_FN / (total_FN + total_TP + 1e-10)
+        print(f"\nTasas acumuladas:")
+        print(f"  TPR (True Positive Rate): {tpr:.4f}")
+        print(f"  FNR (False Negative Rate): {fnr:.4f}")
+
     # Mostrar imágenes que fallaron
     if all_metrics['failed_images']:
         print(f"\nImágenes con errores ({len(all_metrics['failed_images'])}):")
